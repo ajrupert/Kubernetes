@@ -15,7 +15,7 @@ This guide adds:
 
 ### Traffic Flow Diagram
 
-```
+```mermaid
 flowchart LR
     Client -->|HTTPS| Firewall["Firewall / NAT"]
     Firewall --> IP["192.168.1.151"]
