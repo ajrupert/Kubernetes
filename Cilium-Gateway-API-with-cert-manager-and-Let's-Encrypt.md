@@ -133,7 +133,7 @@ The Gateway API integration must be enabled because cert-manager will create tem
 
 Create: `letsencrypt-production.yaml`
 
-```
+```yaml
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
@@ -184,7 +184,7 @@ We will request one certificate containing both application hostnames.
 
 Create: `gateway-certificate.yaml`
 
-```
+```yaml
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
@@ -239,7 +239,7 @@ The existing Gateway currently listens for HTTP traffic on port 80. We will add 
 
 Update: `gateway.yaml`
 
-```
+```yaml
 apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
 metadata:
@@ -284,7 +284,7 @@ kubectl get gateway demo-gateway
 
 The existing HTTPRoutes do not need to be changed, for example:
 
-```
+```yaml
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
