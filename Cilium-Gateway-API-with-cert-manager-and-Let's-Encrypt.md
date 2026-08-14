@@ -317,7 +317,27 @@ Check:
 kubectl get certificate
 ```
 
-Wait for cert-manager to complete the ACME challenge. Expected:
+Wait for cert-manager to complete the ACME challenge. This can take a few minutes.
+
+You can monitor the ACME challenges with:
+
+```bash
+kubectl get challenges
+```
+
+While the validation is in progress, the challenges will show a pending state:
+
+NAME                                      STATE     DOMAIN                       AGE
+demo-gateway-tls-1-495308144-1892510773   pending   app1.example.com             ...
+demo-gateway-tls-1-495308144-3237523562   pending   app2.example.com             ...
+
+Once the challenges have been successfully completed, cert-manager automatically removes them.
+
+The certificate should then become ready:
+
+```bash
+kubectl get certificate
+```
 
 ```
 NAME                READY   SECRET              AGE
