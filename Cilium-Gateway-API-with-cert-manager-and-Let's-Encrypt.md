@@ -52,7 +52,7 @@ This guide assumes the previous guide has already been completed successfully. Y
 - Gateway `demo-gateway`
 - Applications `hello-app-1` and `hello-app-2` with their HTTPRoutes
 
-Helm is also required, since cert-manager (and the DNS-01 webhook, if used) is installed via Helm charts. See the [official Helm installation guide](https://helm.sh/docs/intro/install/) if it is not yet installed.
+Helm is also required, since cert-manager is installed via Helm charts. See the [official Helm installation guide](https://helm.sh/docs/intro/install/) if it is not yet installed.
 
 Verify the Gateway:
 
