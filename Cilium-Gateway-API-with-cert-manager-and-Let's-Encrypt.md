@@ -224,7 +224,7 @@ spec:
             kind: Gateway
 ```
 
-The `gatewayHTTPRoute.parentRefs` configuration tells cert-manager to use the existing `demo-gateway` for the HTTP-01 challenge. cert-manager will create a temporary HTTPRoute that points to its ACME challenge solver. After the certificate has been issued, the temporary HTTPRoute is removed.
+The `gatewayHTTPRoute` configuration tells cert-manager to use the existing `demo-gateway` for the HTTP-01 challenge. cert-manager will create a temporary HTTPRoute that points to its ACME challenge solver. After the certificate has been issued, the temporary HTTPRoute is removed.
 
 ### Option B — DNS-01 (PowerDNS webhook)
 
@@ -437,52 +437,6 @@ kubectl describe certificate demo-gateway-tls
 ```
 
 `Ready` should be `True`. cert-manager will automatically renew the certificate before it expires — no manual certificate replacement is required.
-
----
-
-## Troubleshooting
-
-**Certificate is not ready**
-
-```bash
-kubectl describe certificate demo-gateway-tls
-kubectl get certificaterequest
-kubectl get order
-kubectl get challenge
-```
-
-These resources can be used to determine where the ACME process is failing.
-
-**HTTP-01 challenge is failing**
-
-```bash
-kubectl get httproute
-```
-
-During certificate issuance an additional `cm-acme-http-solver-*` route should appear temporarily. Verify that it references `demo-gateway`, and that the Gateway has a listener on port 80 — do not remove it while the HTTP-01 challenge is in use.
-
-**DNS-01 challenge is failing**
-
-Check the logs of the webhook pod:
-
-```bash
-kubectl logs -n cert-manager -l app=cert-manager-webhook-pdns
-```
-
-Verify that the TXT record `_acme-challenge.<hostname>` was actually created at your DNS provider, and that the API token has permission to manage that zone.
-
-**Let's Encrypt cannot reach the challenge (HTTP-01)**
-
-Make sure incoming HTTP traffic on TCP/80 is actually forwarded to `192.168.1.151:80`.
-
-**HTTPS listener is not programmed**
-
-```bash
-kubectl describe gateway demo-gateway
-kubectl get secret demo-gateway-tls
-```
-
-If the Secret does not exist, check the status of the Certificate.
 
 ---
 
