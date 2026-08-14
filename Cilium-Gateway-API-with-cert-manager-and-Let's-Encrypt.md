@@ -346,19 +346,6 @@ NAME                READY   SECRET              AGE
 demo-gateway-tls    True    demo-gateway-tls    ...
 ```
 
-Verify the TLS Secret:
-
-```bash
-kubectl get secret demo-gateway-tls
-```
-
-Expected:
-
-```
-NAME                TYPE                DATA
-demo-gateway-tls    kubernetes.io/tls   2
-```
-
 ---
 
 ## 5. Update the Gateway
