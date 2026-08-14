@@ -156,7 +156,7 @@ The Gateway API integration must be enabled because cert-manager will create tem
 
 ## 2a. Install the DNS-01 webhook (DNS-01 only)
 
-DNS-01 validation requires a webhook that can create the required TXT record at your DNS provider. This example uses the PowerDNS webhook, matching the setup used in **LetsEncrypt automatic validation via PowerDNS**. If you use a different DNS provider, install the matching cert-manager DNS-01 webhook instead — the rest of this guide stays the same.
+DNS-01 validation requires a webhook that can create the required TXT record at your DNS provider. This example uses the PowerDNS webhook.
 
 ```bash
 helm repo add cert-manager-webhook-pdns https://zachomedia.github.io/cert-manager-webhook-pdns
