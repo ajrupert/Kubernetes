@@ -149,7 +149,8 @@ cert-manager-webhook-...      1/1     Running
 
 The Gateway API integration must be enabled because cert-manager will create temporary HTTPRoute resources for the ACME HTTP-01 challenge, if used.
 
-**Only using DNS-01?** Continue with **2a. Install the DNS-01 webhook** below before creating the ClusterIssuer. **Only using HTTP-01?** Skip ahead to **3. Create the Let's Encrypt ClusterIssuer**.
+**Only using DNS-01?** Continue with **2a. Install the DNS-01 webhook** 
+**Only using HTTP-01?** Skip ahead to **3. Create the Let's Encrypt ClusterIssuer**.
 
 ---
 
