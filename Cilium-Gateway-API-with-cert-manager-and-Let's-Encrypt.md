@@ -18,7 +18,7 @@ Two validation methods are covered:
 - **HTTP-01** — validates ownership by serving a token over port 80. Requires port 80 to be reachable from the internet.
 - **DNS-01** — validates ownership by creating a TXT record via a DNS provider webhook. Useful when port 80 is not available, or for wildcard certificates.
 
-Pick the method that fits your setup you only need one.
+Pick the method that fits your setup — you only need one.
 
 ### Traffic Flow Diagram
 
@@ -52,7 +52,7 @@ This guide assumes the previous guide has already been completed successfully. Y
 - Gateway `demo-gateway`
 - Applications `hello-app-1` and `hello-app-2` with their HTTPRoutes
 
-Helm is also required, since cert-manager is installed via Helm charts. See the [official Helm installation guide](https://helm.sh/docs/intro/install/) if it is not yet installed.
+Helm is also required, since cert-manager (and the DNS-01 webhook, if used) is installed via Helm charts. See the [official Helm installation guide](https://helm.sh/docs/intro/install/) if it is not yet installed.
 
 Verify the Gateway:
 
@@ -177,12 +177,20 @@ TEST SUITE: None
 
 ### Create the API token secret
 
-Create an API token/secret at your DNS provider that is allowed to manage DNS records for your zone.
+This example uses the Previder Portal DNS API, which acts as a proxy to the PowerDNS servers. If you use a different DNS provider, create the equivalent API token there instead.
+
+Create an API token that is allowed to manage DNS records for your zone:
+
+1. Go to your [User Settings](https://portal.previder.nl/#/user/current/properties) in the Previder Portal (top-right menu).
+2. Open the **Tokens** tab.
+3. Create a new token and copy the secret value.
+
+See the [Previder Portal DNS API documentation](https://portal.previder.nl/api-docs.html#/Domain%20DNS%20API) for details on the API this token grants access to.
 
 Kubernetes Secrets store their `data` values as base64. The easiest and safest way to create the Secret is to let `kubectl` handle the base64 encoding for you:
 
 ```bash
-kubectl create secret generic dns-api-key \
+kubectl create secret generic previder-portal-api-key \
   --namespace cert-manager \
   --from-literal=key='your-api-token'
 ```
@@ -242,10 +250,10 @@ spec:
           config:
             host: https://portal.previder.nl
             apiKeySecretRef:
-              name: dns-api-key
+              name: previder-portal-api-key
               key: key
             apiKeyHeaderName: "X-Auth-Token"
-            serverID: "localhost"
+            serverID: "previder"
             ttl: 300
             timeout: 30
 ```
@@ -416,7 +424,7 @@ If DNS-01 was used, also remove the webhook:
 
 ```bash
 helm uninstall cert-manager-webhook-pdns -n cert-manager
-kubectl delete secret dns-api-key -n cert-manager
+kubectl delete secret previder-portal-api-key -n cert-manager
 ```
 
 The existing Cilium Gateway, LB-IPAM, L2 Announcement configuration, applications and HTTPRoutes are not removed.
