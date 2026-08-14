@@ -113,6 +113,13 @@ TCP/443   -> 192.168.1.151:443
 
 cert-manager is responsible for requesting and renewing the certificates.
 
+If you plan to use the DNS-01 challenge, add the following two options to the Helm command below. They are not required for HTTP-01.
+
+```
+--set dns01RecursiveNameservers="80.65.96.50:53" \
+--set dns01RecursiveNameserversOnly=true
+```
+
 ```bash
 helm install \
   cert-manager oci://quay.io/jetstack/charts/cert-manager \
