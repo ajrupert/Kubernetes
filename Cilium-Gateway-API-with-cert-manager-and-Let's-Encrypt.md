@@ -202,7 +202,7 @@ kubectl create secret generic previder-portal-api-key \
 
 Choose the solver configuration that matches the validation method you picked in step 1.
 
-### Option A — HTTP-01
+### Option A: HTTP-01
 
 Create: `letsencrypt.yaml`
 
@@ -228,7 +228,7 @@ spec:
 
 The `gatewayHTTPRoute` configuration tells cert-manager to use the existing `demo-gateway` for the HTTP-01 challenge. cert-manager will create a temporary HTTPRoute that points to its ACME challenge solver. After the certificate has been issued, the temporary HTTPRoute is removed.
 
-### Option B — DNS-01 (PowerDNS webhook)
+### Option B: DNS-01 (PowerDNS webhook)
 
 Create: `letsencrypt.yaml`
 
