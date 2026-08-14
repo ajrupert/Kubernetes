@@ -9,7 +9,7 @@ The existing Cilium Gateway, LoadBalancer IP, L2 Announcement configuration and 
 This guide adds:
 
 - cert-manager
-- Let's Encrypt (production)
+- Let's Encrypt
 - HTTPS on the existing Gateway
 - Automatic TLS certificate renewal
 
@@ -195,19 +195,19 @@ Choose the solver configuration that matches the validation method you picked in
 
 ### Option A — HTTP-01
 
-Create: `letsencrypt-production.yaml`
+Create: `letsencrypt.yaml`
 
 ```yaml
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
-  name: letsencrypt-production
+  name: letsencrypt
 spec:
   acme:
     email: admin@example.com
     server: https://acme-v02.api.letsencrypt.org/directory
     privateKeySecretRef:
-      name: letsencrypt-production
+      name: letsencrypt
     solvers:
     - http01:
         gatewayHTTPRoute:
@@ -221,19 +221,19 @@ The `gatewayHTTPRoute` configuration tells cert-manager to use the existing `dem
 
 ### Option B — DNS-01 (PowerDNS webhook)
 
-Create: `letsencrypt-production.yaml`
+Create: `letsencrypt.yaml`
 
 ```yaml
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
-  name: letsencrypt-production
+  name: letsencrypt
 spec:
   acme:
     email: admin@example.com
     server: https://acme-v02.api.letsencrypt.org/directory
     privateKeySecretRef:
-      name: letsencrypt-production
+      name: letsencrypt
     solvers:
     - dns01:
         webhook:
@@ -257,7 +257,7 @@ Replace `host` with your DNS provider's API endpoint. If you use a webhook other
 Replace `admin@example.com` with a valid email address, then apply whichever option you chose:
 
 ```bash
-kubectl apply -f letsencrypt-production.yaml
+kubectl apply -f letsencrypt.yaml
 ```
 
 Check:
@@ -270,7 +270,7 @@ Expected:
 
 ```
 NAME                      READY
-letsencrypt-production    True
+letsencrypt    True
 ```
 
 ---
@@ -289,7 +289,7 @@ metadata:
 spec:
   secretName: demo-gateway-tls
   issuerRef:
-    name: letsencrypt-production
+    name: letsencrypt
     kind: ClusterIssuer
   dnsNames:
   - app1.example.com
@@ -407,7 +407,7 @@ kubectl describe certificate demo-gateway-tls
 
 ```bash
 kubectl delete certificate demo-gateway-tls
-kubectl delete clusterissuer letsencrypt-production
+kubectl delete clusterissuer letsencrypt
 kubectl delete secret demo-gateway-tls
 helm uninstall cert-manager -n cert-manager
 ```
