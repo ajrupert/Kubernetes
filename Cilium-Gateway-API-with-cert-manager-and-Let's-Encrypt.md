@@ -18,7 +18,7 @@ Two validation methods are covered:
 - **HTTP-01** — validates ownership by serving a token over port 80. Requires port 80 to be reachable from the internet.
 - **DNS-01** — validates ownership by creating a TXT record via a DNS provider webhook. Useful when port 80 is not available, or for wildcard certificates.
 
-Pick the method that fits your setup — you only need one.
+Pick the method that fits your setup you only need one.
 
 ### Traffic Flow Diagram
 
