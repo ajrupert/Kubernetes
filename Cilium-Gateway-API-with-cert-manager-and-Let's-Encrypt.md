@@ -54,33 +54,6 @@ This guide assumes the previous guide has already been completed successfully. Y
 
 Helm is also required, since cert-manager (and the DNS-01 webhook, if used) is installed via Helm charts. See the [official Helm installation guide](https://helm.sh/docs/intro/install/) if it is not yet installed.
 
-Verify the Gateway:
-
-```bash
-kubectl get gateway
-```
-
-Example:
-
-```
-NAME            CLASS    ADDRESS          PROGRAMMED   AGE
-demo-gateway    cilium   192.168.1.151    True         ...
-```
-
-Verify the HTTPRoutes:
-
-```bash
-kubectl get httproute
-```
-
-Example:
-
-```
-NAME                HOSTNAMES
-hello-app-1-route   app1.example.com
-hello-app-2-route   app2.example.com
-```
-
 ---
 
 ## 1. Configure DNS
