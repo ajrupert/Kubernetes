@@ -123,7 +123,7 @@ If you plan to use the DNS-01 challenge, add the following two options to the He
 ```bash
 helm install \
   cert-manager oci://quay.io/jetstack/charts/cert-manager \
-  --version v1.20.3 \
+  --version v1.21.0 \
   --namespace cert-manager \
   --create-namespace \
   --set crds.enabled=true \
