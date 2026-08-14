@@ -52,6 +52,8 @@ This guide assumes the previous guide has already been completed successfully. Y
 - Gateway `demo-gateway`
 - Applications `hello-app-1` and `hello-app-2` with their HTTPRoutes
 
+Helm is also required, since cert-manager (and the DNS-01 webhook, if used) is installed via Helm charts. See the [official Helm installation guide](https://helm.sh/docs/intro/install/) if it is not yet installed.
+
 Verify the Gateway:
 
 ```bash
@@ -175,23 +177,14 @@ TEST SUITE: None
 
 ### Create the API token secret
 
-Create an API token/secret at your DNS provider that is allowed to manage DNS records for your zone, then store it as a Kubernetes Secret:
+Create an API token/secret at your DNS provider that is allowed to manage DNS records for your zone.
 
-```yaml
-apiVersion: v1
-kind: Secret
-metadata:
-  name: dns-api-key
-  namespace: cert-manager
-type: Opaque
-data:
-  key: "<base64 token>"
-```
-
-Apply:
+Kubernetes Secrets store their `data` values as base64. The easiest and safest way to create the Secret is to let `kubectl` handle the base64 encoding for you:
 
 ```bash
-kubectl apply -f dns-api-key-secret.yaml
+kubectl create secret generic dns-api-key \
+  --namespace cert-manager \
+  --from-literal=key='your-api-token'
 ```
 
 ---
@@ -257,7 +250,7 @@ spec:
             timeout: 30
 ```
 
-Replace `host` with your DNS provider's API endpoint. With DNS-01, cert-manager creates a TXT record (`_acme-challenge.<hostname>`) at the DNS provider instead of using an HTTPRoute, so port 80 is not needed.
+Replace `host` with your DNS provider's API endpoint. If you use a webhook other than PowerDNS, check that webhook's documentation for the correct `groupName`, `solverName`, `config` fields and header name — these are provider-specific. With DNS-01, cert-manager creates a TXT record (`_acme-challenge.<hostname>`) at the DNS provider instead of using an HTTPRoute, so port 80 is not needed.
 
 ### Apply
 
@@ -386,7 +379,7 @@ kubectl get gateway demo-gateway
 
 ---
 
-## 7. Test HTTPS
+## 6. Test HTTPS
 
 ```bash
 curl https://app1.example.com
@@ -397,7 +390,7 @@ Both applications are now accessible over HTTPS with a valid, browser-trusted Le
 
 ---
 
-## 8. Automatic Renewal
+## 7. Automatic Renewal
 
 cert-manager automatically manages the certificate lifecycle.
 
