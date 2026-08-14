@@ -247,7 +247,7 @@ spec:
           groupName: acme.zacharyseguin.ca
           solverName: pdns
           config:
-            host: https://your-pdns-api-endpoint
+            host: https://portal.previder.nl
             apiKeySecretRef:
               name: dns-api-key
               key: key
@@ -383,36 +383,6 @@ kubectl get gateway demo-gateway
 `PROGRAMMED` should remain `True`. The TLS connection is terminated at the Cilium Gateway; the connection from the Gateway to the backend remains plain HTTP.
 
 **Note:** if you used DNS-01, you may keep the `http` listener for regular application traffic, or remove it if all traffic should go over HTTPS — it is no longer required for certificate validation.
-
----
-
-## 6. Verify the HTTPRoutes
-
-The existing HTTPRoutes do not need to be changed, for example:
-
-```yaml
-apiVersion: gateway.networking.k8s.io/v1
-kind: HTTPRoute
-metadata:
-  name: hello-app-1-route
-spec:
-  parentRefs:
-  - name: demo-gateway
-  hostnames:
-  - app1.example.com
-  rules:
-  - backendRefs:
-    - name: hello-app-1
-      port: 80
-```
-
-The same HTTPRoute can now also be accessed through the HTTPS listener.
-
-```
-kubectl get httproute
-```
-
-The routes should still be accepted by the Gateway.
 
 ---
 
