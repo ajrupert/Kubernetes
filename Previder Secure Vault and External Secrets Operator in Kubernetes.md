@@ -191,7 +191,7 @@ spec:
 kubectl apply -f hello-app-externalsecret.yaml
 ```
 
-# `remoteRef.key` is the id or description used in step 3. `refreshInterval` controls how often ESO checks the vault for changes — if the secret's value is updated later, the Kubernetes `Secret` is updated automatically within that interval, no `kubectl apply` needed.
+👉  `remoteRef.key` is the id or description used in step 3. `refreshInterval` controls how often ESO checks the vault for changes — if the secret's value is updated later, the Kubernetes `Secret` is updated automatically within that interval, no `kubectl apply` needed.
 
 ---
 
