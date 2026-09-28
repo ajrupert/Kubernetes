@@ -24,7 +24,7 @@ Previder Secure Vault uses three token types, each with a different scope:
 
 The token received when a Secure Vault environment is created in the portal is always an **EnvironmentAdmin** token. In the Vault Dashboard, that environment is used to create a **ReadWrite** token (for managing secrets) and a **ReadOnly** token (for reading secrets from applications).
 
-**Important:** Only a **ReadOnly** token is placed inside the Kubernetes cluster. It can read the secrets it's given the id/name of, but cannot list, create or delete secrets, and cannot create further tokens — so a compromised cluster cannot use it to gain broader access to the vault.
+**Important:** Only a **ReadOnly** token is placed inside the Kubernetes cluster. It can read the secrets it's given the id/name of, but cannot list, create or delete secrets, and cannot create further tokens so a compromised cluster cannot use it to gain broader access to the vault.
 
 ### Architecture Diagram
 
@@ -65,8 +65,8 @@ Create a Secure Vault environment via the [Previder Portal](https://portal.previ
 
 Open the **Vault Dashboard** for the environment in the Previder Portal and create two tokens:
 
-- A **ReadWrite** token, used to manage secrets (create, update, delete) — keep this one out of the cluster, and use it only from the dashboard itself or a secured workstation/CI pipeline.
-- A **ReadOnly** token, used by the cluster to read secrets — this is the only token that ends up inside Kubernetes.
+- A **ReadWrite** token, used to manage secrets (create, update, delete) keep this one out of the cluster, and use it only from the dashboard itself or a secured workstation/CI pipeline.
+- A **ReadOnly** token, used by the cluster to read secrets this is the only token that ends up inside Kubernetes.
 
 👉 Give each application (or namespace) its own ReadOnly token with its own description, rather than sharing a single token across the whole cluster, so access can be revoked per application if needed.
 
@@ -74,7 +74,7 @@ Open the **Vault Dashboard** for the environment in the Previder Portal and crea
 
 # 3. Store a Secret in the Vault
 
-In the Vault Dashboard, using the **ReadWrite** token, create an example secret — an API key for an application called `hello-app`. Note the secret's id or description; either is used to retrieve it later.
+In the Vault Dashboard, using the **ReadWrite** token, create an example secret an API key for an application called `hello-app`. Note the secret's id or description; either is used to retrieve it later.
 
 **Note:** Tokens and secrets can also be managed from the command line instead of the Vault Dashboard, using [`vault-cli`](https://github.com/previder/vault-cli). See the `vault-cli` repository for installation and usage instructions.
 
@@ -191,7 +191,7 @@ spec:
 kubectl apply -f hello-app-externalsecret.yaml
 ```
 
-👉 `remoteRef.key` is the id or description used in step 3. `refreshInterval` controls how often ESO checks the vault for changes — if the secret's value is updated later, the Kubernetes `Secret` is updated automatically within that interval, no `kubectl apply` needed.
+# `remoteRef.key` is the id or description used in step 3. `refreshInterval` controls how often ESO checks the vault for changes — if the secret's value is updated later, the Kubernetes `Secret` is updated automatically within that interval, no `kubectl apply` needed.
 
 ---
 
@@ -224,7 +224,7 @@ s3cr3t-api-key-value
 
 # 9. Update the Secret and Observe the Sync
 
-To demonstrate that ESO keeps the Kubernetes `Secret` in sync with the vault, delete the `hello-app-api-key` secret in the Vault Dashboard (using the ReadWrite token) and recreate it under the **same** name/id, but with a different value — for example `s3cr3t-api-key-value-v2`.
+To demonstrate that ESO keeps the Kubernetes `Secret` in sync with the vault, delete the `hello-app-api-key` secret in the Vault Dashboard (using the ReadWrite token) and recreate it under the **same** name/id, but with a different value for example `s3cr3t-api-key-value-v2`.
 
 By default, this reaches Kubernetes within the `refreshInterval` configured in step 7 (`1h`). To confirm the sync without waiting, force it immediately:
 
@@ -248,15 +248,15 @@ s3cr3t-api-key-value-v2
 
 ## ✅ Summary
 
-- Previder Secure Vault is a hosted, multi-tenant secrets service managed entirely through the Previder Portal's Vault Dashboard — nothing needs to be installed inside the cluster for the vault itself.
+- Previder Secure Vault is a hosted, multi-tenant secrets service managed entirely through the Previder Portal's Vault Dashboard nothing needs to be installed inside the cluster for the vault itself.
 - An **EnvironmentAdmin** token is only used to set up the environment and create narrower tokens; it is never placed in the cluster.
 - A **ReadWrite** token, used from the dashboard, is where secrets are created and managed.
-- A **ReadOnly** token is what actually goes into the cluster, scoped to reading secrets only — least privilege by design.
+- A **ReadOnly** token is what actually goes into the cluster, scoped to reading secrets only least privilege by design.
 - External Secrets Operator's built-in Previder provider authenticates with that ReadOnly token and keeps a Kubernetes `Secret` automatically in sync with what's stored in the vault.
-- This pattern (steps 3, 5–8) is the general-purpose reference implementation — repeat it with a different secret and a different application/namespace for any other credential: a database password, an SMTP credential, a webhook token, and so on.
+- This pattern (steps 3, 5–8) is the general-purpose reference implementation repeat it with a different secret and a different application/namespace for any other credential: a database password, an SMTP credential, a webhook token, and so on.
 - Updating a secret's value in the vault (step 9) reaches Kubernetes automatically within the `refreshInterval`, without any `kubectl apply`.
 
-**Note:** `envFrom` only reads a Secret once, when a Pod starts — an updated value in the vault reaches the Kubernetes `Secret` automatically, but running Pods only pick it up after a restart. A tool like [Stakater Reloader](https://github.com/stakater/Reloader) can trigger that restart automatically when the Secret changes.
+**Note:** `envFrom` only reads a Secret once, when a Pod starts an updated value in the vault reaches the Kubernetes `Secret` automatically, but running Pods only pick it up after a restart. A tool like [Stakater Reloader](https://github.com/stakater/Reloader) can trigger that restart automatically when the Secret changes.
 
 **Next steps:**
 - Create a separate ReadOnly token and `SecretStore` per application/namespace, rather than sharing one token across the whole cluster.
