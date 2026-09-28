@@ -246,16 +246,6 @@ s3cr3t-api-key-value-v2
 
 ---
 
-## ✅ Summary
-
-- Previder Secure Vault is a hosted, multi-tenant secrets service managed entirely through the Previder Portal's Vault Dashboard nothing needs to be installed inside the cluster for the vault itself.
-- An **EnvironmentAdmin** token is only used to set up the environment and create narrower tokens; it is never placed in the cluster.
-- A **ReadWrite** token, used from the dashboard, is where secrets are created and managed.
-- A **ReadOnly** token is what actually goes into the cluster, scoped to reading secrets only least privilege by design.
-- External Secrets Operator's built-in Previder provider authenticates with that ReadOnly token and keeps a Kubernetes `Secret` automatically in sync with what's stored in the vault.
-- This pattern (steps 3, 5–8) is the general-purpose reference implementation repeat it with a different secret and a different application/namespace for any other credential: a database password, an SMTP credential, a webhook token, and so on.
-- Updating a secret's value in the vault (step 9) reaches Kubernetes automatically within the `refreshInterval`, without any `kubectl apply`.
-
 **Note:** `envFrom` only reads a Secret once, when a Pod starts an updated value in the vault reaches the Kubernetes `Secret` automatically, but running Pods only pick it up after a restart. A tool like [Stakater Reloader](https://github.com/stakater/Reloader) can trigger that restart automatically when the Secret changes.
 
 **Next steps:**
