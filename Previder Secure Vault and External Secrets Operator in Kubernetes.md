@@ -76,6 +76,8 @@ Open the **Vault Dashboard** for the environment in the Previder Portal and crea
 
 In the Vault Dashboard, using the **ReadWrite** token, create an example secret — an API key for an application called `hello-app`. Note the secret's id or description; either is used to retrieve it later.
 
+**Note:** Tokens and secrets can also be managed from the command line instead of the Vault Dashboard, using [`vault-cli`](https://github.com/previder/vault-cli). See the `vault-cli` repository for installation and usage instructions.
+
 ---
 
 # 4. Install External Secrets Operator
