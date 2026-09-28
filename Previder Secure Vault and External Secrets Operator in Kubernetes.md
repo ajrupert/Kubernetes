@@ -68,7 +68,7 @@ Open the **Vault Dashboard** for the environment in the Previder Portal and crea
 - A **ReadWrite** token, used to manage secrets (create, update, delete) keep this one out of the cluster, and use it only from the dashboard itself or a secured workstation/CI pipeline.
 - A **ReadOnly** token, used by the cluster to read secrets this is the only token that ends up inside Kubernetes.
 
-👉 Give each application (or namespace) its own ReadOnly token with its own description, rather than sharing a single token across the whole cluster, so access can be revoked per application if needed.
+**Important:** Give each application (or namespace) its own ReadOnly token with its own description, rather than sharing a single token across the whole cluster, so access can be revoked per application if needed.
 
 ---
 
@@ -191,7 +191,7 @@ spec:
 kubectl apply -f hello-app-externalsecret.yaml
 ```
 
-👉  `remoteRef.key` is the id or description used in step 3. `refreshInterval` controls how often ESO checks the vault for changes — if the secret's value is updated later, the Kubernetes `Secret` is updated automatically within that interval, no `kubectl apply` needed.
+**Important:** `remoteRef.key` is the id or description used in step 3. `refreshInterval` controls how often ESO checks the vault for changes if the secret's value is updated later, the Kubernetes `Secret` is updated automatically within that interval, no `kubectl apply` needed.
 
 ---
 
