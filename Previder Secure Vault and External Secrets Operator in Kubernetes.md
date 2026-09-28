@@ -6,7 +6,7 @@ Previder Secure Vault is a secrets management service offered through the [Previ
 
 ## About External Secrets Operator
 
-External Secrets Operator (ESO) is a Kubernetes operator that reads secrets from an external system — in this case Previder Secure Vault — and creates a native Kubernetes `Secret` from them. Applications keep reading a normal `Secret`; ESO takes care of keeping that `Secret` in sync with what's stored in the vault. ESO has built-in, native support for Previder Secure Vault, so no custom integration is needed.
+External Secrets Operator (ESO) is a Kubernetes operator that reads secrets from an external system in this case Previder Secure Vault and creates a native Kubernetes `Secret` from them. Applications keep reading a normal `Secret`; ESO takes care of keeping that `Secret` in sync with what's stored in the vault. ESO has built-in, native support for Previder Secure Vault, so no custom integration is needed.
 
 ## Overview
 
