@@ -243,7 +243,7 @@ Expected output:
 s3cr3t-api-key-value-v2
 ```
 
-**Note:** `envFrom` only reads a Secret once, when a Pod starts, an updated value in the vault reaches the Kubernetes `Secret` automatically, but running Pods only pick it up after a restart. A tool like [Stakater Reloader](https://github.com/stakater/Reloader) can trigger that restart automatically when the Secret changes.
+**Note:** `envFrom` reads the Kubernetes `Secret` only when the Pod starts. When a value in the vault is updated, the change is automatically propagated to the Kubernetes `Secret`, but running Pods only pick up the new value after they are restarted.
 
 ---
 
