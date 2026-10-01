@@ -16,7 +16,7 @@ This guide creates a Secure Vault environment and its tokens and secrets through
 2. Create a ReadWrite and a ReadOnly access token for it.
 3. Store a secret (e.g. a password) in the vault using the ReadWrite token.
 4. Install External Secrets Operator in the cluster.
-5. Configure a `SecretStore` (where the vault is) and an `ExternalSecret` (which secret to fetch), using the ReadOnly token.
+5. Configure a `SecretStore` for the vault and an `ExternalSecret` for the secret to retrieve, using the ReadOnly token.
 6. The application reads the result as a normal Kubernetes `Secret`.
 
 ### Token Types
