@@ -62,7 +62,8 @@ Create a Secure Vault environment via the [Previder Portal](https://portal.previ
 
 Open the **[Vault Dashboard](https://vault.previder.io/ui/#/login)** for the environment and create two tokens: a **ReadWrite** token and a **ReadOnly** token.
 
-**Note:** Give each application its own ReadOnly token with a clear description (e.g. "hello-app - production"), rather than reusing one token across the whole cluster. This makes revocation and auditing easier per application  it does **not** stop that token from reading other secrets in the same environment (see the note above). For actual isolation between applications or teams, use separate Secure Vault environments instead.
+**Note:** Give each application its own ReadOnly token with a clear description (e.g. `hello-app - production`) rather than sharing a single token across the entire cluster. This makes revocation and auditing easier on a per-application basis. However, separate tokens do **not** restrict access to specific secrets: each token can still read any secret in the same environment (see the note above). For actual isolation between applications or teams, use separate **Secure Vault environments** instead.
+
 
 ---
 
