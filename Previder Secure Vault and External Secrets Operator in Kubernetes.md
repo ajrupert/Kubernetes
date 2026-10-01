@@ -2,11 +2,11 @@
 
 ## About Previder Secure Vault
 
-Previder Secure Vault is a secrets management service, offered through the [Previder Portal](https://portal.previder.nl) self-service portal. No installation inside the Kubernetes cluster is required: everything — the vault itself, its tokens and secrets — is created and managed through the **Vault Dashboard** in the portal.
+Previder Secure Vault is a secrets management service, offered through the **[Previder Portal](https://portal.previder.nl)** self-service portal. No installation inside the Kubernetes cluster is required: everything the vault itself, its tokens and secrets is created and managed through the **[Vault Dashboard](https://vault.previder.io/ui/#/login)** in the portal.
 
 ## About External Secrets Operator
 
-External Secrets Operator (ESO) is a Kubernetes operator that reads secrets from an external system — in this case Previder Secure Vault — and creates a native Kubernetes `Secret` from them, which applications consume as usual. ESO has built-in, native support for Previder Secure Vault, so no custom integration is needed.
+External Secrets Operator (ESO) is a Kubernetes operator that reads secrets from an external system in this case Previder Secure Vault and creates a native Kubernetes `Secret` from them, which applications consume as usual. ESO has built-in, native support for Previder Secure Vault, so no custom integration is needed.
 
 ## Overview
 
@@ -72,7 +72,7 @@ Create a Secure Vault environment via the [Previder Portal](https://portal.previ
 
 # 2. Create a ReadWrite and a ReadOnly Token
 
-Open the **Vault Dashboard** for the environment and create two tokens: a **ReadWrite** token and a **ReadOnly** token, as described above.
+Open the **[Vault Dashboard](https://vault.previder.io/ui/#/login)** for the environment and create two tokens: a **ReadWrite** token and a **ReadOnly** token.
 
 👉 Give each application its own ReadOnly token with a clear description (e.g. "hello-app — production"), rather than reusing one token across the whole cluster, so access can be revoked per application if needed.
 
@@ -80,9 +80,9 @@ Open the **Vault Dashboard** for the environment and create two tokens: a **Read
 
 # 3. Store a Secret in the Vault
 
-In the Vault Dashboard, using the **ReadWrite** token, create an example secret — an API key for an application called `hello-app`. Give it a clear name or description, such as `hello-app-api-key` — this exact name is needed again in step 7.
+In the **[Vault Dashboard](https://vault.previder.io/ui/#/login)**, using the **ReadWrite** token, create an example secret for an application called `hello-app`. Give it a clear name or description, such as `hello-app-api-key` this exact name is needed again in step 7.
 
-**Note:** Instead of the Vault Dashboard, secrets and keys can also be managed from the command line using [`vault-cli`](https://github.com/previder/vault-cli). See that repository for installation and usage instructions — this guide only covers the dashboard, since it requires nothing to install.
+**Note:** Instead of the Vault Dashboard, secrets and keys can also be managed from the command line using [`vault-cli`](https://github.com/previder/vault-cli). See that repository for installation and usage instructions this guide only covers the dashboard, since it requires nothing to install.
 
 ---
 
@@ -195,7 +195,7 @@ spec:
       key: hello-app-api-key
 ```
 
-👉 `remoteRef.key` is the id/description used in step 3. `refreshInterval` controls how often ESO checks the vault for changes — if the secret's value is updated later, the Kubernetes `Secret` is updated automatically within that interval, no `kubectl apply` needed.
+👉 `remoteRef.key` is the id/description used in step 3. `refreshInterval` controls how often ESO checks the vault for changes, if the secret's value is updated later, the Kubernetes `Secret` is updated automatically within that interval, no `kubectl apply` needed.
 
 Apply:
 
@@ -224,7 +224,7 @@ Confirm the value ended up correctly in the Kubernetes Secret:
 kubectl -n hello-app get secret hello-app-api -o jsonpath='{.data.API_KEY}' | base64 -d
 ```
 
-Expected output:
+This should show the value you chose in step 3, for example:
 
 ```
 s3cr3t-api-key-value
@@ -234,7 +234,7 @@ s3cr3t-api-key-value
 
 # 9. Update the Secret and Observe the Sync
 
-To demonstrate that ESO keeps the Kubernetes `Secret` in sync with the vault, delete the `hello-app-api-key` secret in the Vault Dashboard (using the ReadWrite token) and recreate it under the **same** name/id, but with a different value — for example `s3cr3t-api-key-value-v2`.
+To demonstrate that ESO keeps the Kubernetes `Secret` in sync with the vault, delete the `hello-app-api-key` secret in the Vault Dashboard (using the ReadWrite token) and recreate it under the **same** name/id, but with a different value for example `s3cr3t-api-key-value-v2`.
 
 By default, this reaches Kubernetes within the `refreshInterval` configured in step 7 (`1h`). To confirm the sync without waiting, force it immediately:
 
