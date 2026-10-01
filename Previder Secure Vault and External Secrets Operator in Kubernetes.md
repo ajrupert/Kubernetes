@@ -2,11 +2,11 @@
 
 ## About Previder Secure Vault
 
-Previder Secure Vault is a secrets management service, offered through the **[Previder Portal](https://portal.previder.nl)** self-service portal. No installation inside the Kubernetes cluster is required: everything the vault itself, its tokens and secrets is created and managed through the **[Vault Dashboard](https://vault.previder.io/ui/#/login)** in the portal.
+Previder Secure Vault is a secrets management service, offered through the [Previder Portal](https://portal.previder.nl) self-service portal. No installation inside the Kubernetes cluster is required: everything — the vault itself, its tokens and secrets — is created and managed through the **Vault Dashboard** in the portal.
 
 ## About External Secrets Operator
 
-External Secrets Operator (ESO) is a Kubernetes operator that reads secrets from an external system in this case Previder Secure Vault and creates a native Kubernetes `Secret` from them, which applications consume as usual. ESO has built-in, native support for Previder Secure Vault, so no custom integration is needed.
+External Secrets Operator (ESO) is a Kubernetes operator that reads secrets from an external system — in this case Previder Secure Vault — and creates a native Kubernetes `Secret` from them, which applications consume as usual. ESO has built-in, native support for Previder Secure Vault, so no custom integration is needed.
 
 ## Overview
 
@@ -34,23 +34,7 @@ The token received when a Secure Vault environment is created is always an **Env
 - A **ReadWrite** token — used to manage secrets (create, update, delete), from the dashboard or a secured workstation/CI pipeline.
 - A **ReadOnly** token — used by the cluster to read secrets. This is the only token that ends up inside Kubernetes.
 
-**Important:** Only a ReadOnly token is placed inside the cluster. A compromised cluster can therefore read the secrets it was given access to, but cannot create, modify or delete secrets, and cannot create further tokens.
-
-### Architecture Diagram
-
-```mermaid
-flowchart LR
-    You["You <br/> Vault Dashboard"] -->|"ReadWrite token: create secret"| Vault["Previder Secure Vault"]
-    You -->|"ReadOnly token: create K8s Secret"| TokenSecret
-
-    subgraph K8s["Kubernetes cluster"]
-        TokenSecret["Secret <br/> ReadOnly token"] -->|used by| ESO["External Secrets Operator"]
-        ESO -->|writes| Secret["Secret <br/> API_KEY"]
-    end
-
-    ESO -->|"ReadOnly token: read secret"| Vault
-    Vault -->|returns value| ESO
-```
+**Important:** Only a ReadOnly token is placed inside the cluster. A ReadOnly token can decrypt any secret in its environment, as long as the id/name is known, it is not restricted to specific secrets. A compromised cluster can therefore read any secret in that environment, but cannot create, modify or delete secrets, and cannot create further tokens. Secrets that must stay isolated from each other (e.g. belonging to different applications or teams) need **separate Secure Vault environments**, not just separate tokens within the same one — see the Next steps at the end of this guide.
 
 ---
 
@@ -74,7 +58,7 @@ Create a Secure Vault environment via the [Previder Portal](https://portal.previ
 
 Open the **[Vault Dashboard](https://vault.previder.io/ui/#/login)** for the environment and create two tokens: a **ReadWrite** token and a **ReadOnly** token.
 
-👉 Give each application its own ReadOnly token with a clear description (e.g. "hello-app — production"), rather than reusing one token across the whole cluster, so access can be revoked per application if needed.
+**Note:** Give each application its own ReadOnly token with a clear description (e.g. "hello-app - production"), rather than reusing one token across the whole cluster. This makes revocation and auditing easier per application  it does **not** stop that token from reading other secrets in the same environment (see the note above). For actual isolation between applications or teams, use separate Secure Vault environments instead.
 
 ---
 
@@ -195,7 +179,7 @@ spec:
       key: hello-app-api-key
 ```
 
-👉 `remoteRef.key` is the id/description used in step 3. `refreshInterval` controls how often ESO checks the vault for changes, if the secret's value is updated later, the Kubernetes `Secret` is updated automatically within that interval, no `kubectl apply` needed.
+**Note:** `remoteRef.key` is the id/description used in step 3. `refreshInterval` controls how often ESO checks the vault for changes, if the secret's value is updated later, the Kubernetes `Secret` is updated automatically within that interval, no `kubectl apply` needed.
 
 Apply:
 
@@ -281,16 +265,52 @@ The token, the Secret holding it and the `SecretStore` (steps 2, 5 and 6) are se
 kubectl apply -f hello-app-externalsecret.yaml
 ```
 
-**Option B — create a separate `ExternalSecret`**, resulting in its own Kubernetes `Secret`. Copy `hello-app-externalsecret.yaml`, and change `metadata.name`, `target.name`, `secretKey` and `remoteRef.key`.
+**Option B — create a separate `ExternalSecret`**, resulting in its own Kubernetes `Secret`. For example, `hello-app-db-externalsecret.yaml`:
+
+```
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: hello-app-db
+  namespace: hello-app
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    name: previder-backend
+    kind: SecretStore
+  target:
+    name: hello-app-db
+    creationPolicy: Owner
+  data:
+  - secretKey: DB_PASSWORD
+    remoteRef:
+      key: hello-app-db-password
+```
+
+**Note:** This is `hello-app-externalsecret.yaml` from step 7, with `metadata.name`, `target.name`, `secretKey` and `remoteRef.key` changed — it reuses the same `secretStoreRef`, so no extra `SecretStore` is needed.
+
+```
+kubectl apply -f hello-app-db-externalsecret.yaml
+```
 
 Verify the new value:
 
 ```
-kubectl -n hello-app get secret hello-app-api -o jsonpath='{.data.DB_PASSWORD}' | base64 -d
+kubectl -n hello-app get secret hello-app-db -o jsonpath='{.data.DB_PASSWORD}' | base64 -d
 ```
+## Summary
+
+- Previder Secure Vault is a hosted, multi-tenant secrets service managed entirely through the Previder Portal's Vault Dashboard — nothing needs to be installed inside the cluster for the vault itself.
+- An **EnvironmentAdmin** token is only used to set up the environment and create narrower tokens; it is never placed in the cluster.
+- A **ReadWrite** token, used from the dashboard, is where secrets are created and managed.
+- A **ReadOnly** token is what actually goes into the cluster, scoped to reading secrets only — least privilege by design.
+- External Secrets Operator's built-in Previder provider authenticates with that ReadOnly token and keeps a Kubernetes `Secret` automatically in sync with what's stored in the vault.
+- This pattern (steps 3, 5–8) is the general-purpose reference implementation — repeat it with a different secret and a different application/namespace for any other credential: a database password, an SMTP credential, a webhook token, and so on.
+- Updating a secret's value in the vault (step 9) reaches Kubernetes automatically within the `refreshInterval`, without any `kubectl apply`.
 
 ---
 
 **Next steps:**
-- Create a separate ReadOnly token and `SecretStore` per application/namespace, rather than sharing one token across the whole cluster.
-- Manage secrets from the Vault Dashboard (or `vault-cli`) using the ReadWrite token — never from inside the cluster.
+- Use a separate Secure Vault **environment** per application or team that needs real isolation, tokens within the same environment are not restricted to specific secrets, so separate environments are what actually keeps secrets apart.
+- Within one environment, still give each application its own ReadOnly token and `SecretStore`, so access can be revoked and audited per application, just don't rely on this for isolation.
+- Manage secrets from the Vault Dashboard (or `vault-cli`) using the ReadWrite token, never from inside the cluster.
