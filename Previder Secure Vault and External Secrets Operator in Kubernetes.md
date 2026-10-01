@@ -2,7 +2,7 @@
 
 ## About Previder Secure Vault
 
-Previder Secure Vault is a secrets management service, offered through the [Previder Portal](https://portal.previder.nl) self-service portal. No installation inside the Kubernetes cluster is required: everything, the vault itself, its tokens and secrets, is created and managed through the **Vault Dashboard** in the portal.
+Previder Secure Vault is a secrets management service available through the [Previder Portal](https://portal.previder.nl) self-service portal. No installation within the Kubernetes cluster is required. The Vault itself, along with its tokens and secrets, is fully provisioned and managed through the **Vault Dashboard** in the portal.
 
 ## About External Secrets Operator
 
