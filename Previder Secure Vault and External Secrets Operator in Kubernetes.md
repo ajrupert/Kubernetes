@@ -34,9 +34,11 @@ The token received when a Secure Vault environment is created is always an **Env
 - A **ReadWrite** token, used to manage secrets (create, update, delete), from the dashboard or a secured workstation/CI pipeline.
 - A **ReadOnly** token, used by the cluster to read secrets. This is the only token that ends up inside Kubernetes.
 
-**Important:** Only a ReadOnly token is stored in the cluster. This token can decrypt any secret in its environment, if its ID or name is known; access is not restricted to specific secrets. 
+**Important:** Only a ReadOnly token is stored in the cluster. The token can decrypt any secret in its environment, if the secret's ID or name is known.
 
-As a result, a compromised cluster could read any secret in that environment, but it cannot create, modify, or delete secrets or create additional tokens. If secrets need to remain isolated from one another for example, secrets belonging to different applications or teams, use separate **Secure Vault environments** rather than separate tokens within the same environment.
+Access is not restricted to specific secrets, this means that if the cluster is compromised, an attacker could use the token to read any secret in that environment. However, the token cannot be used to create, modify, or delete secrets, or to create additional tokens.
+
+If secrets need to be isolated for example, secrets belonging to different applications or teams. Use separate Secure Vault environments rather than separate tokens within the same environment.
 
 ---
 
