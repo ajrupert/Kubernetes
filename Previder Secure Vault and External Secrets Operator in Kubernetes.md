@@ -31,7 +31,7 @@ Previder Secure Vault uses three token types, each with a different scope:
 
 The token received when a Secure Vault environment is created is always an **EnvironmentAdmin** token. In the Vault Dashboard, that token is used once to create:
 
-- A **ReadWrite** token, used to manage secrets (create, update, delete), from the dashboard or a secured workstation/CI pipeline.
+- A **ReadWrite** token, used to manage secrets (create, delete), from the dashboard.
 - A **ReadOnly** token, used by the cluster to read secrets. This is the only token that ends up inside Kubernetes.
 
 **Important:** Only a ReadOnly token is stored in the cluster. The token can decrypt any secret in its environment, if the secret's ID or name is known.
@@ -303,19 +303,10 @@ Verify the new value:
 ```
 kubectl -n hello-app get secret hello-app-db -o jsonpath='{.data.DB_PASSWORD}' | base64 -d
 ```
-## Summary
-
-- Previder Secure Vault is a hosted, multi-tenant secrets service managed entirely through the Previder Portal's Vault Dashboard, nothing needs to be installed inside the cluster for the vault itself.
-- An **EnvironmentAdmin** token is only used to set up the environment and create narrower tokens; it is never placed in the cluster.
-- A **ReadWrite** token, used from the dashboard, is where secrets are created and managed.
-- A **ReadOnly** token is what actually goes into the cluster, scoped to reading secrets only.
-- External Secrets Operator's built-in Previder provider authenticates with that ReadOnly token and keeps a Kubernetes `Secret` automatically in sync with what's stored in the vault.
-- This pattern (steps 3, 5–8) is the general-purpose reference implementation, repeat it with a different secret and a different application/namespace for any other credential: a database password, an SMTP credential, a webhook token, and so on.
-- Updating a secret's value in the vault (step 9) reaches Kubernetes automatically within the `refreshInterval`, without any `kubectl apply`.
 
 ---
 
-**Next steps:**
+**Importend:**
 - Use a separate Secure Vault **environment** per application or team that needs real isolation, tokens within the same environment are not restricted to specific secrets, so separate environments are what actually keeps secrets apart.
 - Within one environment, still give each application its own ReadOnly token and `SecretStore`, so access can be revoked and audited per application, just don't rely on this for isolation.
 - Manage secrets from the Vault Dashboard (or `vault-cli`) using the ReadWrite token, never from inside the cluster.
